@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teoria da Comunicação — UNIGRAN 2026.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0A0A0A;
+    --off-white: #F5F4EF;
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dim: rgba(201,168,76,0.12);
+    --mid: #141414;
+    --card: #1A1A1A;
+    --gray: #666;
+    --gray-light: #999;
+    --border: rgba(201,168,76,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--off-white);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRAIN */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--off-white);
+  }
+
+  .nav-logo em { color: var(--gold); font-style: italic; }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  @media (max-width: 640px) { .nav-links { display: none; } }
+
+  /* COVER */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 80px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  .cover-eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .cover-title-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--off-white);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .cover-title-main em { color: var(--gold); font-style: italic; }
+
+  .cover-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--gray-light);
+    margin-top: 1.5rem;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .cover-meta {
+    font-size: 0.55rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .cover-scroll {
+    position: absolute;
+    bottom: 6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.2s forwards;
+  }
+
+  .cover-scroll span {
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* TOC */
+  .toc {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    margin-top: 2.5rem;
+  }
+
+  .toc-item {
+    background: var(--black);
+    padding: 1.5rem;
+    text-decoration: none;
+    display: block;
+    transition: background 0.2s ease;
+    cursor: pointer;
+  }
+
+  .toc-item:hover { background: var(--gold-dim); }
+  .toc-item:hover .toc-arrow { color: var(--gold); transform: translateX(4px); }
+
+  .toc-num {
+    font-size: 0.52rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .toc-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--off-white);
+    line-height: 1.3;
+  }
+
+  .toc-arrow {
+    font-size: 0.7rem;
+    color: var(--gray);
+    margin-top: 0.8rem;
+    display: block;
+    transition: all 0.2s ease;
+  }
+
+  /* PAGE */
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .page.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .page-num {
+    font-size: 0.52rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .page-title em { color: var(--gold); font-style: italic; }
+
+  .gold-rule { width: 40px; height: 1px; background: var(--gold); margin-bottom: 2.5rem; }
+
+  .body-text {
+    font-size: 0.83rem;
+    line-height: 1.9;
+    color: #BBBAB4;
+    max-width: 680px;
+  }
+
+  .body-text p { margin-bottom: 1rem; }
+
+  /* HIGHLIGHT */
+  .highlight {
+    border-left: 2px solid var(--gold);
+    padding: 1.5rem 2rem;
+    background: var(--gold-dim);
+    margin: 2.5rem 0;
+  }
+
+  .highlight p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--off-white);
+  }
+
+  /* PREMISE CARDS */
+  .premise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .premise-card {
+    background: var(--card);
+    padding: 1.8rem 1.5rem;
+    transition: background 0.2s ease;
+  }
+
+  .premise-card:hover { background: var(--mid); }
+
+  .premise-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    opacity: 0.25;
+    line-height: 1;
+    margin-bottom: 0.8rem;
+  }
+
+  .premise-title {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--off-white);
+    margin-bottom: 6px;
+  }
+
+  .premise-text {
+    font-size: 0.7rem;
+    color: var(--gray-light);
+    line-height: 1.7;
+  }
+
+  /* TOKEN TABLE */
+  .token-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.72rem;
+  }
+
+  .token-table th {
+    text-align: left;
+    padding: 0.8rem 1rem;
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  .token-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+    color: #BBBAB4;
+    vertical-align: middle;
+  }
+
+  .token-table tr:last-child td { border-bottom: none; }
+  .token-table tr:hover td { color: var(--off-white); }
+
+  .token-name {
+    font-family: monospace;
+    color: var(--off-white);
+    font-size: 0.7rem;
+  }
+
+  /* TWO-COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2.5rem; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; gap: 2rem; } }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    font-size: 0.52rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+  }
+
+  .badge-gold {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.25);
+  }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 0.52rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: block;
+    margin-top: 2.5rem;
+  }
+
+  /* MATRIX */
+  .matrix {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2.5rem 0;
+    position: relative;
+  }
+
+  .matrix::before {
+    content: 'Pipeline';
+    position: absolute;
+    top: -1px; left: 2rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: var(--mid);
+    padding: 0 8px;
+    transform: translateY(-50%);
+  }
+
+  .matrix-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .matrix-step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 0.8rem 1rem;
+    font-size: 0.65rem;
+    color: var(--off-white);
+    font-weight: 400;
+    white-space: nowrap;
+    transition: border-color 0.2s ease;
+  }
+
+  .matrix-step:hover { border-color: var(--gold); }
+
+  .matrix-arrow {
+    color: var(--gold);
+    opacity: 0.5;
+    font-size: 0.7rem;
+  }
+
+  .matrix-desc {
+    font-size: 0.65rem;
+    color: var(--gray-light);
+    margin-top: 1rem;
+    line-height: 1.7;
+  }
+
+  /* FLASHCARDS */
+  .flashcard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .flashcard {
+    background: var(--card);
+    padding: 1.8rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: relative;
+    min-height: 140px;
+  }
+
+  .flashcard:hover { background: var(--mid); }
+
+  .flashcard-q {
+    font-size: 0.72rem;
+    color: var(--gray-light);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .flashcard-q strong {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--off-white);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .flashcard-a {
+    font-size: 0.7rem;
+    color: var(--gold);
+    line-height: 1.7;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .flashcard.open .flashcard-a {
+    max-height: 200px;
+    opacity: 1;
+  }
+
+  .flashcard-toggle {
+    position: absolute;
+    top: 1.2rem; right: 1.2rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gray);
+    transition: color 0.2s ease;
+  }
+
+  .flashcard:hover .flashcard-toggle { color: var(--gold); }
+  .flashcard.open .flashcard-toggle { color: var(--gold); }
+
+  /* QUIZ */
+  .quiz-list {
+    margin: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .quiz-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 1.8rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .quiz-item:hover { border-color: rgba(201,168,76,0.3); }
+
+  .quiz-num {
+    font-size: 0.5rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .quiz-question {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--off-white);
+    margin-bottom: 1.2rem;
+    line-height: 1.4;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .quiz-option {
+    font-size: 0.72rem;
+    color: #BBBAB4;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(201,168,76,0.08);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+  }
+
+  .quiz-option:hover { border-color: rgba(201,168,76,0.25); color: var(--off-white); }
+
+  .quiz-option.correct { background: rgba(74,155,111,0.1); border-color: #4A9B6F; color: #4A9B6F; }
+  .quiz-option.wrong { background: rgba(180,60,60,0.1); border-color: #C0504D; color: #C0504D; }
+  .quiz-option.reveal { background: rgba(74,155,111,0.08); border-color: rgba(74,155,111,0.3); color: #4A9B6F; }
+
+  .quiz-option-letter {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .quiz-answer {
+    font-size: 0.68rem;
+    color: var(--gray-light);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+  }
+
+  .quiz-answer.show {
+    max-height: 120px;
+    opacity: 1;
+  }
+
+  .quiz-answer em { color: var(--gold); font-style: normal; }
+
+  /* LASSWELL TABLE */
+  .lasswell-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.72rem;
+  }
+
+  .lasswell-table th {
+    background: var(--gold-dim);
+    color: var(--gold);
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lasswell-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+    color: #BBBAB4;
+    vertical-align: middle;
+  }
+
+  .lasswell-table td:first-child {
+    color: var(--off-white);
+    font-weight: 400;
+  }
+
+  .lasswell-table tr:hover td { background: rgba(201,168,76,0.04); }
+
+  /* JAKOBSON TABLE */
+  .jak-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+  }
+
+  .jak-table th {
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .jak-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+    font-size: 0.72rem;
+    color: #BBBAB4;
+  }
+
+  .jak-table td:first-child { color: var(--off-white); }
+  .jak-table td:nth-child(2) { color: var(--gold); font-style: italic; font-size: 0.68rem; }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.7rem;
+  }
+
+  .compare-table th {
+    padding: 0.8rem 1rem;
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .compare-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+    color: #BBBAB4;
+    vertical-align: top;
+  }
+
+  .compare-table td:first-child { color: var(--off-white); font-weight: 500; font-size: 0.65rem; letter-spacing: 0.05em; }
+
+  /* IC TEÓRICOS */
+  .teoricos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .teorico-card {
+    background: var(--card);
+    padding: 1.8rem;
+    transition: background 0.2s ease;
+  }
+
+  .teorico-card:hover { background: var(--mid); }
+
+  .teorico-role {
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .teorico-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--off-white);
+    margin-bottom: 0.8rem;
+  }
+
+  .teorico-desc {
+    font-size: 0.68rem;
+    color: var(--gray-light);
+    line-height: 1.7;
+  }
+
+  /* FOOTER */
+  footer {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--off-white);
+  }
+
+  .footer-logo em { color: var(--gold); font-style: italic; }
+
+  .footer-meta {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .footer-rule { width: 40px; height: 1px; background: var(--border); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* SCROLL PROGRESS */
+  .progress-bar {
+    position: fixed;
+    top: 52px; left: 0;
+    height: 1px;
+    background: var(--gold);
+    z-index: 101;
+    transition: width 0.1s linear;
+    width: 0%;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Teoria da <em>Comunicação</em></div>
+  <ul class="nav-links">
+    <li><a href="#hipodérmica">Hipodérmica</a></li>
+    <li><a href="#comm-research">Research</a></li>
+    <li><a href="#funcionalismo">Funcionalismo</a></li>
+    <li><a href="#agenda">Agenda</a></li>
+    <li><a href="#frankfurt">Frankfurt</a></li>
+    <li><a href="#flashcards">Flashcards</a></li>
+    <li><a href="#gabarito">Gabarito</a></li>
+  </ul>
+</nav>
+
+<!-- PROGRESS -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- COVER -->
+<div class="cover" style="padding-top: 52px;">
+  <p class="cover-eyebrow">7º Semestre · Publicidade e Propaganda · UNIGRAN 2026.1</p>
+  <h1 class="cover-title-main">Teoria da<br><em>Comunicação</em></h1>
+  <p class="cover-subtitle">Guia de Revisão Completo</p>
+  <p class="cover-meta">Profa. Dra. Évelin Gomes da Silva &nbsp;·&nbsp; 2026.1 &nbsp;·&nbsp; Bons estudos, Marcio</p>
+  <div class="cover-scroll">
+    <span>Rolar</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <span class="page-num">Índice</span>
+  <h2 class="page-title">O que você vai<br><em>revisar.</em></h2>
+  <div class="gold-rule"></div>
+  <div class="toc-grid">
+    <a class="toc-item" href="#hipodérmica">
+      <span class="toc-num">01</span>
+      <span class="toc-name">Teoria Hipodérmica</span>
+      <span class="toc-arrow">→</span>
+    </a>
+    <a class="toc-item" href="#comm-research">
+      <span class="toc-num">02</span>
+      <span class="toc-name">Communication Research — Lasswell, Lazarsfeld, Jakobson</span>
+      <span class="toc-arrow">→</span>
+    </a>
+    <a class="toc-item" href="#funcionalismo">
+      <span class="toc-num">03</span>
+      <span class="toc-name">Teoria Funcionalista</span>
+      <span class="toc-arrow">→</span>
+    </a>
+    <a class="toc-item" href="#agenda">
+      <span class="toc-num">04</span>
+      <span class="toc-name">Agenda-Setting, Gatekeeping & Framing</span>
+      <span class="toc-arrow">→</span>
+    </a>
+    <a class="toc-item" href="#frankfurt">
+      <span class="toc-num">05</span>
+      <span class="toc-name">Indústria Cultural — Escola de Frankfurt</span>
+      <span class="toc-arrow">→</span>
+    </a>
+    <a class="toc-item" href="#flashcards">
+      <span class="toc-num">06</span>
+      <span class="toc-name">Flashcards — 20 questões rápidas</span>
+      <span class="toc-arrow">→</span>
+    </a>
+    <a class="toc-item" href="#gabarito">
+      <span class="toc-num">07</span>
+      <span class="toc-name">Gabarito Comentado — 10 questões</span>
+      <span class="toc-arrow">→</span>
+    </a>
+  </div>
+</div>
+
+<!-- 01 HIPODÉRMICA -->
+<section id="hipodérmica">
+<div class="page">
+  <span class="page-num">01 — Teoria Hipodérmica</span>
+  <h2 class="page-title">A Bala<br><em>Mágica.</em></h2>
+  <div class="gold-rule"></div>
+
+  <div class="body-text">
+    <p>Também chamada de Teoria da Agulha Hipodérmica ou Bala Mágica, foi a primeira grande tentativa de explicar os efeitos da mídia de massa. Surge no contexto das Guerras Mundiais, explosão do rádio e do cinema, industrialização e urbanização aceleradas.</p>
+  </div>
+
+  <div class="premise-grid">
+    <div class="premise-card">
+      <div class="premise-num">01</div>
+      <div class="premise-title">Imediatismo</div>
+      <div class="premise-text">O efeito é instantâneo — estímulo dispara resposta sem delay.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-num">02</div>
+      <div class="premise-title">Uniformidade</div>
+      <div class="premise-text">Todos os receptores reagem da mesma forma à mesma mensagem.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-num">03</div>
+      <div class="premise-title">Inevitabilidade</div>
+      <div class="premise-text">Não há resistência, filtro nem mediação social.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-num">04</div>
+      <div class="premise-title">Público como Massa</div>
+      <div class="premise-text">Audiência homogênea, passiva, sem crítica nem defesa.</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <span class="section-label">Bases teóricas</span>
+      <div class="body-text">
+        <p><strong style="color:var(--off-white); font-weight:500;">Psicologia das Massas (Le Bon):</strong> na multidão, a racionalidade individual se dilui. O anonimato e o contágio emocional amplificam reações.</p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Behaviorismo (Watson / Skinner):</strong> foco no comportamento observável: Estímulo → [caixa preta] → Resposta. Se a propaganda estimula o medo, a resposta será o medo.</p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Reforço intermitente (Skinner):</strong> recompensas incertas criam comportamentos resistentes à extinção — base das redes sociais e cassinos.</p>
+      </div>
+    </div>
+    <div>
+      <span class="section-label">Superação da teoria</span>
+      <div class="body-text">
+        <p>Pesquisas de campo de Lasswell e Lazarsfeld demonstraram que as pessoas interpretam, negociam e resistem às mensagens. Grupos sociais, crenças prévias e líderes de opinião mediam os efeitos.</p>
+        <p>A bala não é tão mágica.</p>
+      </div>
+      <span class="section-label" style="margin-top: 1.5rem;">Legado atual</span>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:0.5rem;">
+        <span class="badge badge-gold">Branding por repetição</span>
+        <span class="badge badge-gold">Gamificação</span>
+        <span class="badge badge-gold">Fake news viral</span>
+        <span class="badge badge-gold">Viés de confirmação</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <p>O algoritmo NÃO injeta ideias novas — ele radicaliza predisposições existentes. Viés de confirmação é a nova bala mágica.</p>
+  </div>
+</div>
+</section>
+
+<!-- 02 COMM RESEARCH -->
+<section id="comm-research">
+<div class="page">
+  <span class="page-num">02 — Communication Research</span>
+  <h2 class="page-title">Lasswell · Lazarsfeld<br><em>· Jakobson</em></h2>
+  <div class="gold-rule"></div>
+
+  <div class="body-text">
+    <p>Campo científico estruturado nos EUA entre 1920–1940, impulsionado pela necessidade estratégica de entender a influência da mídia após as Guerras. Bases: positivismo (Auguste Comte) e empirismo (Locke, Hume).</p>
+  </div>
+
+  <span class="section-label">Harold Lasswell — O Arquiteto da Estratégia (1927/1948)</span>
+  <div class="body-text">
+    <p>Foco sociológico. Enxerga a comunicação como processo linear, instrumental e de causa e efeito.</p>
+  </div>
+
+  <table class="lasswell-table">
+    <thead>
+      <tr>
+        <th>Elemento</th>
+        <th>Pergunta</th>
+        <th>Exemplo prático</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Quem</td><td>Quem comunica?</td><td>Marca / influenciador / instituição</td></tr>
+      <tr><td>Diz o quê</td><td>Qual a mensagem?</td><td>Proposta de valor, copy, narrativa</td></tr>
+      <tr><td>Por qual meio</td><td>Qual canal?</td><td>Instagram, TikTok, TV, mídia programática</td></tr>
+      <tr><td>A quem</td><td>Para qual público?</td><td>Segmentação do público-alvo</td></tr>
+      <tr><td>Com que efeito</td><td>Qual o resultado?</td><td>Conversão, engajamento, awareness</td></tr>
+    </tbody>
+  </table>
+
+  <span class="section-label" style="margin-top:3rem;">Paul Lazarsfeld — Efeitos Limitados & Two-Step Flow (1944)</span>
+  <div class="body-text">
+    <p>Estudo <em style="color:var(--off-white)">The People's Choice</em> (1944): mediu o impacto da mídia na decisão de voto. Resultado: a maioria das pessoas não mudava de opinião por causa da mídia.</p>
+  </div>
+
+  <div class="premise-grid" style="margin-top:1.5rem;">
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Efeitos Limitados</div>
+      <div class="premise-text">A mídia reforça opiniões existentes muito mais do que as transforma. O público não é passivo.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Two-Step Flow</div>
+      <div class="premise-text">1º — a mídia atinge líderes de opinião. 2º — eles filtram e retransmitem para seus grupos sociais.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Exposição Seletiva</div>
+      <div class="premise-text">As pessoas buscam ativamente mensagens que confirmam suas crenças prévias. Precursor das bolhas algorítmicas.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Multi-Step Flow</div>
+      <div class="premise-text">Era digital: qualquer indivíduo com capital simbólico pode ser líder de opinião em escala massiva.</div>
+    </div>
+  </div>
+
+  <span class="section-label" style="margin-top:3rem;">Roman Jakobson — As 6 Funções da Linguagem</span>
+  <div class="body-text">
+    <p>Foco estrutural/linguístico. Pergunta: <em style="color:var(--gold)">"Qual dimensão da linguagem está sendo ativada?"</em></p>
+  </div>
+
+  <table class="jak-table">
+    <thead>
+      <tr>
+        <th>Elemento</th>
+        <th>Função</th>
+        <th>Aplicação publicitária</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Emissor</td><td>Emotiva</td><td>Tom de voz e identidade da marca</td></tr>
+      <tr><td>Receptor</td><td>Conativa</td><td>CTAs: "Compre agora", "Experimente"</td></tr>
+      <tr><td>Mensagem</td><td>Poética</td><td>Design, ritmo, slogan, estética</td></tr>
+      <tr><td>Contexto</td><td>Referencial</td><td>Informação objetiva, dados, fatos</td></tr>
+      <tr><td>Canal</td><td>Fática</td><td>Notificações push, stories, manter canal ativo</td></tr>
+      <tr><td>Código</td><td>Metalinguística</td><td>Explicar o próprio sistema de linguagem usado</td></tr>
+    </tbody>
+  </table>
+
+  <div class="highlight">
+    <p>Lasswell: sociológico/estratégico — "Qual o efeito da mensagem?" &nbsp;·&nbsp; Jakobson: linguístico — "Qual dimensão da linguagem está ativada?"</p>
+  </div>
+</div>
+</section>
+
+<!-- 03 FUNCIONALISMO -->
+<section id="funcionalismo">
+<div class="page">
+  <span class="page-num">03 — Teoria Funcionalista</span>
+  <h2 class="page-title">O que a comunicação<br><em>faz na sociedade?</em></h2>
+  <div class="gold-rule"></div>
+
+  <div class="body-text">
+    <p>Período 1930–1960. A sociedade é um organismo vivo — cada parte (mídia, escola, família, governo) cumpre funções vitais para manter o equilíbrio.</p>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <span class="section-label">3 Pilares científicos</span>
+      <div class="body-text">
+        <p><strong style="color:var(--off-white); font-weight:500;">Sociologia Estrutural-Funcionalista:</strong> fato social, solidariedade orgânica, imperativos funcionais.</p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Behaviorismo:</strong> estudo do comportamento observável. A mídia como estímulo que induz comportamentos.</p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Filosofia da Sociedade de Massa:</strong> os meios de comunicação passam a dar identidade ao sujeito.</p>
+      </div>
+    </div>
+    <div>
+      <span class="section-label">4 Funções da mídia (Lasswell + Wright)</span>
+      <table class="token-table" style="margin-top:0.5rem;">
+        <tbody>
+          <tr><td class="token-name">Vigilância</td><td>Coleta e circulação de notícias. Alerta sobre ameaças e oportunidades.</td></tr>
+          <tr><td class="token-name">Correlação</td><td>Interpretação dos eventos. Editoriais e propagandas que prescrevem condutas.</td></tr>
+          <tr><td class="token-name">Transmissão</td><td>Comunicação do legado cultural e socialização de novos membros.</td></tr>
+          <tr><td class="token-name">Entretenimento</td><td>Distração e alívio de tensões (adicionada por Wright).</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <span class="section-label" style="margin-top:3rem;">Disfunções (Merton) & Usos e Gratificações (Katz, 1959)</span>
+
+  <div class="premise-grid">
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Funções Manifestas</div>
+      <div class="premise-text">Intencionais e reconhecidas. Ex: telejornal informa.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Funções Latentes</div>
+      <div class="premise-text">Não planejadas. Ex: o mesmo telejornal pode legitimar hierarquias ou gerar medo.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Disfunção Narcotizante</div>
+      <div class="premise-text">Excesso de informação transforma energia cívica em passividade. O cidadão confunde saber com agir.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Usos e Gratificações</div>
+      <div class="premise-text">Katz: "O que as pessoas fazem com a mídia?" 5 necessidades: cognitivas, afetivas, integrativas, sociais, evasão.</div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <p>Algoritmos exercem correlação (bolhas sociais), fake news é disfunção social, consumo de vídeos curtos exemplifica Usos e Gratificações. A necessidade humana de produzir sentidos permanece constante.</p>
+  </div>
+</div>
+</section>
+
+<!-- 04 AGENDA -->
+<section id="agenda">
+<div class="page">
+  <span class="page-num">04 — Agenda-Setting, Gatekeeping, Framing & Espiral do Silêncio</span>
+  <h2 class="page-title">O pipeline da<br><em>realidade social.</em></h2>
+  <div class="gold-rule"></div>
+
+  <div class="two-col">
+    <div>
+      <span class="section-label">Gatekeeping — Kurt Lewin (1940) / David White (1950)</span>
+      <div class="body-text">
+        <p>O gatekeeper é o indivíduo ou sistema que decide quais informações "atravessam o portão" e se tornam notícia. <strong style="color:var(--off-white); font-weight:400;">A verdadeira força da mídia está no que ela decide calar.</strong></p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Mr. Gates (White, 1950):</strong> a seleção de notícias era puramente subjetiva — baseada em valores pessoais, experiências e preconceitos.</p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Algorithmic Gatekeeping:</strong> o algoritmo substitui o editor humano, operando como mediador invisível.</p>
+      </div>
+    </div>
+    <div>
+      <span class="section-label">Agenda-Setting — McCombs & Shaw (1972)</span>
+      <div class="highlight" style="margin-top:0.5rem;">
+        <p>"A imprensa pode não ter muito sucesso em dizer às pessoas o que pensar, mas é espantosamente bem-sucedida em dizer sobre o que pensar."</p>
+      </div>
+      <div class="body-text" style="margin-top:1rem;">
+        <p>Mecanismo: seleção de temas + hierarquização = agenda pública.</p>
+      </div>
+      <table class="token-table">
+        <tbody>
+          <tr><td class="token-name">Nível 1 — Objeto</td><td>Coloca o tema na mesa</td></tr>
+          <tr><td class="token-name">Nível 2 — Atributos</td><td>Define o ângulo</td></tr>
+          <tr><td class="token-name">Nível 3 — Associações</td><td>Conecta ao mundo do receptor</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:3rem;">
+    <div>
+      <span class="section-label">Framing (Enquadramento) — Goffman (1974) / Entman (1993)</span>
+      <div class="body-text">
+        <p>Enquadrar = selecionar aspectos da realidade + torná-los salientes via repetição, símbolos ou destaque visual.</p>
+        <p><strong style="color:var(--gold); font-weight:300;">"O enquadramento não é mentira — é seleção."</strong> O mesmo fato gera percepções opostas dependendo do ângulo.</p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Branding é Framing:</strong> o produto não muda; o significado simbólico atribuído a ele muda.</p>
+        <p><strong style="color:var(--off-white); font-weight:500;">Efeito Kuleshov:</strong> o espectador deriva mais significado da interação de imagens sequenciais do que da imagem isolada.</p>
+      </div>
+    </div>
+    <div>
+      <span class="section-label">Espiral do Silêncio — Noelle-Neumann (anos 1970)</span>
+      <div class="body-text">
+        <p><strong style="color:var(--off-white); font-weight:500;">Premissa:</strong> o motor da sociedade é o medo inato do isolamento social.</p>
+      </div>
+      <table class="token-table">
+        <tbody>
+          <tr><td class="token-name">1. Observação</td><td>Identificar a opinião dominante</td></tr>
+          <tr><td class="token-name">2. Cálculo de risco</td><td>Avaliar o custo de discordar</td></tr>
+          <tr><td class="token-name">3. Silenciamento</td><td>Autocensura da minoria</td></tr>
+          <tr><td class="token-name">4. Retroalimentação</td><td>O silêncio amplifica o consenso</td></tr>
+          <tr><td class="token-name">Núcleo Duro</td><td>Os que não temem o isolamento</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <span class="section-label" style="margin-top:3rem;">Matriz de Controle — O Pipeline Completo</span>
+  <div class="matrix">
+    <div class="matrix-flow">
+      <div class="matrix-step">Gatekeeping<br><span style="font-size:0.58rem; color:var(--gray-light);">filtra e exclui</span></div>
+      <span class="matrix-arrow">→</span>
+      <div class="matrix-step">Agenda-Setting<br><span style="font-size:0.58rem; color:var(--gray-light);">amplifica e hierarquiza</span></div>
+      <span class="matrix-arrow">→</span>
+      <div class="matrix-step">Framing<br><span style="font-size:0.58rem; color:var(--gray-light);">pinta o quadro emocional</span></div>
+      <span class="matrix-arrow">→</span>
+      <div class="matrix-step">Espiral do Silêncio<br><span style="font-size:0.58rem; color:var(--gray-light);">solidifica o consenso</span></div>
+    </div>
+    <p class="matrix-desc">Juntas, essas teorias formam o pipeline da construção social da realidade. Da seleção ao silêncio — um processo contínuo de controle da percepção coletiva.</p>
+  </div>
+</div>
+</section>
+
+<!-- 05 FRANKFURT -->
+<section id="frankfurt">
+<div class="page">
+  <span class="page-num">05 — Indústria Cultural</span>
+  <h2 class="page-title">Escola de<br><em>Frankfurt.</em></h2>
+  <div class="gold-rule"></div>
+
+  <div class="body-text">
+    <p>Adorno & Horkheimer, <em style="color:var(--off-white)">Dialética do Esclarecimento</em> (1947). Teoria Crítica: a cultura não emana espontaneamente do povo — é produzida de cima para baixo para fins de lucro, conformidade e controle social, ideológico e econômico.</p>
+  </div>
+
+  <div class="teoricos-grid">
+    <div class="teorico-card">
+      <span class="teorico-role">Pais da IC</span>
+      <div class="teorico-name">Adorno & Horkheimer</div>
+      <div class="teorico-desc">Padronização cultural, pseudo-individualidade, lucro acima da expressão. Autores da Dialética do Esclarecimento.</div>
+    </div>
+    <div class="teorico-card">
+      <span class="teorico-role">O Primo Otimista</span>
+      <div class="teorico-name">Walter Benjamin</div>
+      <div class="teorico-desc">Perda da Aura: reprodutibilidade técnica destrói a unicidade da obra. Arte perde valor ritual, ganha valor de circulação.</div>
+    </div>
+    <div class="teorico-card">
+      <span class="teorico-role">Crítico do Consumo</span>
+      <div class="teorico-name">Herbert Marcuse</div>
+      <div class="teorico-desc">Homem unidimensional — perde o pensamento crítico pelo conforto. Falsas necessidades impostas pelo sistema.</div>
+    </div>
+  </div>
+
+  <span class="section-label">Conceitos centrais</span>
+  <div class="premise-grid">
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Padronização</div>
+      <div class="premise-text">Tudo montado em blocos pré-fabricados. A fórmula se replica. O verdadeiramente novo é excluído por ser risco comercial.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Pseudo-Individualização</div>
+      <div class="premise-text">Ilusão de escolha e originalidade. "Você é único (igual a todo mundo)."</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Falsas Necessidades</div>
+      <div class="premise-text">O sistema impõe desejos artificiais (gadget do ano) que substituem os desejos reais de emancipação.</div>
+    </div>
+    <div class="premise-card">
+      <div class="premise-title" style="margin-bottom:8px;">Perda da Aura</div>
+      <div class="premise-text">Reprodutibilidade técnica (fotografia, cinema, IA generativa) destrói a existência única da obra.</div>
+    </div>
+  </div>
+
+  <span class="section-label" style="margin-top:3rem;">IC vs. Cultura de Massa vs. Cultura Pop</span>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Indústria Cultural</th>
+        <th>Cultura de Massa</th>
+        <th>Cultura Pop</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Natureza</td>
+        <td>Mecanismo econômico</td>
+        <td>Fenômeno social de consumo</td>
+        <td>Híbrido interativo</td>
+      </tr>
+      <tr>
+        <td>Ponto de vista</td>
+        <td>De quem VENDE</td>
+        <td>De quem CONSOME</td>
+        <td>Co-criado com audiência</td>
+      </tr>
+      <tr>
+        <td>Objetivo</td>
+        <td>Transformar cultura em capital</td>
+        <td>Entreter o maior número</td>
+        <td>Diálogo e identidade</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="highlight">
+    <p>"Use a publicidade para iluminar a realidade, não para cegar as pessoas." — Adorno/Horkheimer</p>
+  </div>
+</div>
+</section>
+
+<!-- 06 FLASHCARDS -->
+<section id="flashcards">
+<div class="page">
+  <span class="page-num">06 — Flashcards</span>
+  <h2 class="page-title">20 Questões<br><em>Rápidas.</em></h2>
+  <div class="gold-rule"></div>
+
+  <div class="body-text">
+    <p>Clique em cada card para revelar a resposta. Ideal para revisão de última hora.</p>
+  </div>
+
+  <div class="flashcard-grid" id="flashcard-grid">
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é a Teoria Hipodérmica?</strong></div>
+      <div class="flashcard-a">A mídia injeta mensagens diretamente na massa passiva, com efeito imediato e uniforme. Também chamada de Bala Mágica. Contexto: guerras mundiais, explosão do rádio e do cinema.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>Quais são as 3 premissas centrais da Hipodérmica?</strong></div>
+      <div class="flashcard-a">1. Imediatismo (efeito instantâneo). 2. Uniformidade (todos reagem igual). 3. Inevitabilidade (sem resistência ou filtro).</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>Qual é a fórmula de Lasswell?</strong></div>
+      <div class="flashcard-a">Quem → Diz o quê → Por qual meio → A quem → Com que efeito. Modelo linear, sociológico, ainda muito aplicado no planejamento de mídia atual.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que Lazarsfeld descobriu com Efeitos Limitados?</strong></div>
+      <div class="flashcard-a">Lazarsfeld (1944): a mídia não hipnotiza. Seus efeitos são condicionados por contexto social e líderes de opinião. Rompe com a ideia de massa passiva.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é o Two-Step Flow?</strong></div>
+      <div class="flashcard-a">Fluxo em dois níveis: a mídia atinge líderes de opinião (1º nível), que filtram e retransmitem para seus grupos sociais (2º nível). A influência é indireta e socialmente mediada.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é Exposição Seletiva?</strong></div>
+      <div class="flashcard-a">Tendência de as pessoas buscarem mensagens que confirmam suas crenças prévias. Lazarsfeld antecipou a lógica das bolhas algorítmicas décadas antes da internet.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>Quais são as 6 funções de Jakobson?</strong></div>
+      <div class="flashcard-a">Emotiva (emissor), Conativa (receptor), Poética (mensagem), Referencial (contexto), Fática (canal), Metalinguística (código).</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>Diferença entre Lasswell e Jakobson?</strong></div>
+      <div class="flashcard-a">Lasswell: sociológico/estratégico — "Qual o efeito da mensagem?" Jakobson: linguístico/estrutural — "Qual dimensão da linguagem está ativada?"</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>Quais são as 4 funções da mídia segundo o Funcionalismo?</strong></div>
+      <div class="flashcard-a">1. Vigilância (informar/alertar). 2. Correlação (interpretar/integrar). 3. Transmissão Cultural. 4. Entretenimento (distração — Wright).</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é a Disfunção Narcotizante?</strong></div>
+      <div class="flashcard-a">Lazarsfeld & Merton: excesso de informação transforma energia cívica em passividade. O cidadão confunde conhecer os problemas com fazer algo a respeito.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que são Usos e Gratificações?</strong></div>
+      <div class="flashcard-a">Katz (1959): "O que as pessoas fazem com a mídia?" O receptor é ativo e usa a mídia para satisfazer 5 necessidades: cognitivas, afetivo-estéticas, integrativas da personalidade, integração social e evasão.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é Gatekeeping?</strong></div>
+      <div class="flashcard-a">Processo pelo qual um editor (ou algoritmo) decide o que "atravessa o portão" e vira notícia. A verdadeira força da mídia está no que ela decide calar.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que afirma o Agenda-Setting?</strong></div>
+      <div class="flashcard-a">McCombs & Shaw (1972): a mídia não diz o que pensar, mas sobre o que pensar. O agendamento midiático transfere a relevância de um tema para a agenda pública.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>Quais são os 3 níveis do Agenda-Setting?</strong></div>
+      <div class="flashcard-a">1. Objeto: coloca o tema na mesa. 2. Atributos: define o ângulo. 3. Associações: conecta ao mundo do receptor (próximo do Framing).</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é Framing (Enquadramento)?</strong></div>
+      <div class="flashcard-a">Goffman/Entman: selecionar aspectos da realidade e torná-los salientes. "Não é mentira — é seleção." Branding é framing.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é a Espiral do Silêncio?</strong></div>
+      <div class="flashcard-a">Noelle-Neumann (1970s): medo do isolamento leva à autocensura da opinião minoritária. O silêncio das minorias tende a se amplificar, reforçando a percepção da opinião dominante.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é a Indústria Cultural?</strong></div>
+      <div class="flashcard-a">Adorno & Horkheimer (1947): cultura produzida de cima para baixo para lucro, conformidade e controle social. A arte vira mercadoria com código de barras.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é Pseudo-Individualização?</strong></div>
+      <div class="flashcard-a">A IC cria ilusão de escolha e originalidade. Os produtos parecem únicos mas seguem a mesma estrutura. "Você é único (igual a todo mundo)."</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>O que é a Perda da Aura (Benjamin)?</strong></div>
+      <div class="flashcard-a">A reprodutibilidade técnica (fotografia, cinema, digital, IA) destrói a existência única e intransferível da obra. Arte perde valor ritual e ganha valor de circulação.</div>
+    </div>
+
+    <div class="flashcard" onclick="toggleCard(this)">
+      <span class="flashcard-toggle">Revelar →</span>
+      <div class="flashcard-q"><strong>Por que o algoritmo seria um "Quinto Poder"?</strong></div>
+      <div class="flashcard-a">A IA exerce poder epistêmico: define o que é percebido como relevante, cria bolhas informacionais, amplifica emoções e intermedia decisões — operando além do Quarto Poder (imprensa editorial).</div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- 07 GABARITO -->
+<section id="gabarito">
+<div class="page">
+  <span class="page-num">07 — Gabarito Comentado</span>
+  <h2 class="page-title">10 Questões<br><em>Estilo Prova.</em></h2>
+  <div class="gold-rule"></div>
+
+  <div class="body-text">
+    <p>Escolha uma alternativa para revelar o gabarito e a justificativa.</p>
+  </div>
+
+  <div class="quiz-list">
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 01</span>
+      <div class="quiz-question">A Teoria Hipodérmica pressupõe que o público é:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q1')"><span class="quiz-option-letter">A</span> Ativo e seletivo</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q1')"><span class="quiz-option-letter">B</span> Passivo, homogêneo e sem filtros</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q1')"><span class="quiz-option-letter">C</span> Mediado por líderes de opinião</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q1')"><span class="quiz-option-letter">D</span> Crítico e resistente</div>
+      </div>
+      <div class="quiz-answer" id="q1">Gabarito: <em>B</em> — A bala mágica assume que todos reagem da mesma forma ao estímulo midiático, sem resistência individual ou mediação social.</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 02</span>
+      <div class="quiz-question">O estudo "The People's Choice" (1944) de Lazarsfeld demonstrou que:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q2')"><span class="quiz-option-letter">A</span> A mídia tem poder hipnótico absoluto</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q2')"><span class="quiz-option-letter">B</span> A maioria das pessoas não mudava de opinião por causa da mídia</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q2')"><span class="quiz-option-letter">C</span> As funções da linguagem determinam o engajamento</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q2')"><span class="quiz-option-letter">D</span> Gatekeeping é sempre algorítmico</div>
+      </div>
+      <div class="quiz-answer" id="q2">Gabarito: <em>B</em> — Lazarsfeld descobriu que a mídia reforça opiniões já existentes muito mais do que as transforma radicalmente.</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 03</span>
+      <div class="quiz-question">Na Fórmula de Lasswell, "Por qual meio" corresponde a:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q3')"><span class="quiz-option-letter">A</span> O emissor da mensagem</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q3')"><span class="quiz-option-letter">B</span> A análise de audiência</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q3')"><span class="quiz-option-letter">C</span> O canal/mídia escolhido</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q3')"><span class="quiz-option-letter">D</span> O impacto esperado da campanha</div>
+      </div>
+      <div class="quiz-answer" id="q3">Gabarito: <em>C</em> — O elemento "Por qual meio" equivale ao canal — TV, Instagram, TikTok, mídia programática etc. É a escolha estratégica da plataforma.</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 04</span>
+      <div class="quiz-question">A função da linguagem de Jakobson focada no receptor é:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q4')"><span class="quiz-option-letter">A</span> Poética</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q4')"><span class="quiz-option-letter">B</span> Emotiva</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q4')"><span class="quiz-option-letter">C</span> Fática</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q4')"><span class="quiz-option-letter">D</span> Conativa</div>
+      </div>
+      <div class="quiz-answer" id="q4">Gabarito: <em>D</em> — A função Conativa é orientada ao destinatário, visando provocar uma ação. CTAs como "Compre agora" e "Experimente" são exemplos clássicos.</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 05</span>
+      <div class="quiz-question">A Disfunção Narcotizante descreve:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q5')"><span class="quiz-option-letter">A</span> O algoritmo que filtra notícias falsas</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q5')"><span class="quiz-option-letter">B</span> O excesso de informação que gera apatia política</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q5')"><span class="quiz-option-letter">C</span> A padronização cultural da Indústria Cultural</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q5')"><span class="quiz-option-letter">D</span> O Gatekeeping algorítmico nas redes sociais</div>
+      </div>
+      <div class="quiz-answer" id="q5">Gabarito: <em>B</em> — Lazarsfeld & Merton: o cidadão confunde estar informado com agir. A exposição massiva à mídia paralisa a ação real.</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 06</span>
+      <div class="quiz-question">O conceito de Gatekeeping foi originalmente criado por:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q6')"><span class="quiz-option-letter">A</span> McCombs & Shaw, 1972</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q6')"><span class="quiz-option-letter">B</span> David White, 1950</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q6')"><span class="quiz-option-letter">C</span> Kurt Lewin, 1940</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q6')"><span class="quiz-option-letter">D</span> Roman Jakobson</div>
+      </div>
+      <div class="quiz-answer" id="q6">Gabarito: <em>C</em> — Kurt Lewin (1940) criou o conceito para o fluxo de alimentos. David White (1950) aplicou ao jornalismo no estudo "Mr. Gates".</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 07</span>
+      <div class="quiz-question">O Framing (Enquadramento) afirma que:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q7')"><span class="quiz-option-letter">A</span> A mídia decide quem entra no noticiário</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q7')"><span class="quiz-option-letter">B</span> A mídia define sobre o que o público deve pensar</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q7')"><span class="quiz-option-letter">C</span> A seleção e saliência de aspectos da realidade constroem significado</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q7')"><span class="quiz-option-letter">D</span> O público é passivo ante as mensagens midiáticas</div>
+      </div>
+      <div class="quiz-answer" id="q7">Gabarito: <em>C</em> — Goffman/Entman: enquadrar é selecionar aspectos e torná-los memoráveis. "Não é mentira, é seleção."</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 08</span>
+      <div class="quiz-question">Qual conceito descreve a ilusão de originalidade produzida pela Indústria Cultural?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q8')"><span class="quiz-option-letter">A</span> Perda da Aura</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q8')"><span class="quiz-option-letter">B</span> Disfunção Narcotizante</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q8')"><span class="quiz-option-letter">C</span> Pseudo-Individualização</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q8')"><span class="quiz-option-letter">D</span> Exposição Seletiva</div>
+      </div>
+      <div class="quiz-answer" id="q8">Gabarito: <em>C</em> — A Pseudo-Individualização faz produtos parecerem únicos, mas a estrutura é idêntica para todos. Exemplo: formatos de roteiro Marvel.</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 09</span>
+      <div class="quiz-question">A Espiral do Silêncio (Noelle-Neumann) explica que:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q9')"><span class="quiz-option-letter">A</span> A IA silencia as minorias nos algoritmos automaticamente</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q9')"><span class="quiz-option-letter">B</span> O medo de isolamento leva à autocensura da opinião minoritária</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q9')"><span class="quiz-option-letter">C</span> O Gatekeeping suprime vozes dissidentes editorialmente</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q9')"><span class="quiz-option-letter">D</span> A exposição seletiva cria bolhas informacionais algorítmicas</div>
+      </div>
+      <div class="quiz-answer" id="q9">Gabarito: <em>B</em> — O mecanismo é: observação da opinião dominante → cálculo de risco social → silenciamento → retroalimentação. O silêncio amplifica a percepção do consenso.</div>
+    </div>
+
+    <div class="quiz-item">
+      <span class="quiz-num">Questão 10</span>
+      <div class="quiz-question">No contexto digital, o Two-Step Flow de Lazarsfeld evoluiu para:</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q10')"><span class="quiz-option-letter">A</span> Single-Step Flow</div>
+        <div class="quiz-option" onclick="answerQuiz(this, true, 'q10')"><span class="quiz-option-letter">B</span> Multi-Step Flow</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q10')"><span class="quiz-option-letter">C</span> Gatekeeping Algorítmico exclusivo</div>
+        <div class="quiz-option" onclick="answerQuiz(this, false, 'q10')"><span class="quiz-option-letter">D</span> Função Fática Digital</div>
+      </div>
+      <div class="quiz-answer" id="q10">Gabarito: <em>B</em> — Com a internet, qualquer indivíduo com capital simbólico pode ser líder de opinião em escala massiva. Algoritmos também operam como mediadores, tornando o fluxo multinível.</div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-rule"></div>
+  <div class="footer-logo">Teoria da <em>Comunicação</em></div>
+  <p class="footer-meta">Bons estudos, Marcio &nbsp;·&nbsp; UNIGRAN 2026.1 &nbsp;·&nbsp; Profa. Dra. Évelin Gomes da Silva</p>
+  <p class="footer-meta" style="margin-top:4px;">7º Semestre · Publicidade e Propaganda</p>
+</footer>
+
+<script>
+  // SCROLL PROGRESS
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = (scrollTop / docHeight) * 100;
+    progress.style.width = percent + '%';
+  });
+
+  // INTERSECTION OBSERVER — page animations
+  const pages = document.querySelectorAll('.page');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08 });
+
+  pages.forEach(page => observer.observe(page));
+
+  // FLASHCARDS
+  function toggleCard(card) {
+    card.classList.toggle('open');
+    const toggle = card.querySelector('.flashcard-toggle');
+    toggle.textContent = card.classList.contains('open') ? 'Fechar ↑' : 'Revelar →';
+  }
+
+  // QUIZ
+  function answerQuiz(option, isCorrect, questionId) {
+    const parent = option.closest('.quiz-item');
+    const options = parent.querySelectorAll('.quiz-option');
+    const answer = document.getElementById(questionId);
+
+    // Already answered?
+    if (parent.dataset.answered) return;
+    parent.dataset.answered = 'true';
+
+    options.forEach(opt => {
+      opt.style.cursor = 'default';
+    });
+
+    if (isCorrect) {
+      option.classList.add('correct');
+    } else {
+      option.classList.add('wrong');
+      // Reveal correct
+      options.forEach(opt => {
+        if (!opt.classList.contains('wrong')) {
+          // find correct by checking onclick attribute
+          const onclick = opt.getAttribute('onclick');
+          if (onclick && onclick.includes('true')) {
+            opt.classList.add('reveal');
+          }
+        }
+      });
+    }
+
+    answer.classList.add('show');
+  }
+</script>
+</body>
+</html>
